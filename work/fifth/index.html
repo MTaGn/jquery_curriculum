@@ -97,6 +97,28 @@
       // .data('') DOM要素にあるdata-~を取得できる
       // .change() セレクトボックスの値の変更をキャッチする関数
       // $().each() DOM要素を1つずつループ処理をする（ループ内で$(this)を使うと要素がひとつずつ取得できる）
+      // 自分のコメント each(オブジェクトや配列,関数)
+      // 自分のコメント selectタグによってselectボックスを生成。クリックすると子のoption要素が表示される。
+      // 自分でコメント changeは指定要素がクリックされたり、イベント発火すると引数の関数が実行される。  
+      // 自分でコメント selectボックス内のli要素をクリック
+      $(function() {
+        $(".select").change(function()　{
+          var opVal = $(this).val();
+          if(opVal == "all"){
+            $(".list").children("li").each(function() {
+              $(this).show();
+            });
+          }else{
+            $(".list").children("li").each(function() {
+              if($(this).data("category-type") == opVal){
+                $(this).show();
+              }else{
+                $(this).hide();
+              }
+            });
+          }
+        });
+      });
     </script>
   </body>
 </html>

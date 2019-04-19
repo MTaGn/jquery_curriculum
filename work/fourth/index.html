@@ -56,6 +56,18 @@
       // .next() 要素の隣の要素を取得します。これは使わなくてもできます。
       // .children() 要素の子要素を取得します。
       // .stop() 現在動作中のアニメーション処理を全て中止します。
+      // 自分のコメント　thisでイベント発火したDOMを指定するので、thisでhoverしたDOMを指定可能になる。
+      // 自分のコメント hoverの回数分アニメーションがたまるので、.stop()のよってアニメーション設定時間より早くhoverを外したときアニメーションを中断し、次のアニメーションを実行するように設定
+      // 自分のコメント　slideupは隠れている要素を表示
+      // 自分のコメント　メソッドチェーンで記述
+      // 自分のコメント　全体ホバーできるようにリスト内容とタブ名を囲うli要素を指定する
+      $(function() {
+        $(".menu__list").children().hover(function() {
+          $(this).children("ul").stop().slideDown(300);
+        }, function() {
+          $(this).children("ul").stop().slideUp(300);
+        });
+      });
     </script>
   </body>
 </html>
