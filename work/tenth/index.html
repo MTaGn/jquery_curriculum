@@ -26,6 +26,15 @@
     </div>
     <script src="../../common/js/jquery.js"></script>
     <script>
+      // 自分のコメント 条件1.検索結果が20件表示される。さらに同じワードで検索をかけると最初の20件の上に次の20件が表示。
+      // 自分のコメント 条件2.別のワードにすると前の結果は消去され、新たに20件が表示。
+      // 自分のコメント 条件3.検索結果0件のとき、【検索結果が見つかりませんでした。別のキーワードで検索して下さい。】を表示。
+      // 自分のコメント 徐健4.正常に通信ができる場合 → 検索結果表示、できない場合 → どんなエラーが起きてどうすればよいのか表示(1.検索ワード無 2.半角英数字1文字 3.検索連打 4.ネット切断)。
+      // 自分のコメント 関数はまとめて書く。定義をしておく。
+      // 自分のコメ})ント ページのひな形があるから登録はすんでるはず  
+      // 自分のコメント .done(function(){})正常終了したら実行する。 .fail(function(){}) 　リクエストして通信が終了したら実行するときに使う？サービス固有パラメータ？dataにhits20を記述？
+      // 自分のコメント 検索欄にて入力された値を引数にて getメソッドで楽天urlにリクエストする？(inputタグからval()で受け取れる？)⇒リクエストurlを設定⇒結果を受け取り、空でなければ出力。getメソッドの第二引数に記述。もしデータ数が0より多ければeachで順番に。a, imgタグを追加するかんじ？
+
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
       //
@@ -37,37 +46,119 @@
       // $.each(配列, function functionName() {}) 配列に対しての繰り返し処理
       // $.ajax({}) 外部ファイルやURLに対してデータをリクエストすることができます。
       // 以下は今回使う$.ajaxの基本的な形です。
-      //
-      // $.ajax({
-      //   url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-      //   type: 'GET',
-      //   datatype: 'json',
-      //   data: {
-      //     // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-      //     applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
-      //     booksGenreId: '001'
-      //   },
-      // }).done(function(data) {
-      //   // この中にデータ取得後の動きを記述していきます。
-      //   console.log(data);
-      // });
-      //
-      //
-      // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
-      // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
-      // <li class='lists__item'>
-      //  <div class='lists__item__inner'>
-      //    <a href='' class='lists__item__link' target='_blank'>
-      //      <img src='' class='lists__item__img' alt=''>
-      //      <p class='lists__item__detail'>作品名：</p>
-      //      <p class='lists__item__detail'>作者　：</p>
-      //      <p class='lists__item__detail'>出版社：</p>
-      //    </a>
-      //  </div>
-      // </li>
-      //
-      //
-      //
+      // 自分のコメント api ソフトの機能を共有させるもの。開発の効率化 ajax 非同期通信。データのリクエストでデータをもらう。json ファイル形式。 get post
+      // 1.ajaxでほしい情報をリクエストできるようにhits,page,keywordを設定
+      // 2.アプリに検索ワードを入れてクリックすると、そのワードを取得、
+      // 3.doneで取得した表示する
+      $(function() {
+        var i = 1;
+        var preWord = "";//自分のコメント 一番最初は検索されていないはずだから、空でelseの処理に持っていく。
+        // if文自分のコメント で1.同ワードが複数回検索されたときはページ数が増える、2.新しいワードが検索されると、前の検索結果を消去、1ページのみ表示させる
+        $(".search__btn").click(function() {
+          var word = $(".search__text__input").val();
+          if(word == preWord) {
+            i++;
+            }else{
+            $(".lists").empty();
+            i = 1;
+            preWord = word;　
+          }
+          // リクエストの通信
+        $.ajax({
+          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+          type: 'GET', 
+          datatype: 'json',//返却形式
+          data: { //出力パラメータ:楽天側が用意してくれる内容なので、こちらは入力必要なし}
+          // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+            applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
+            booksGenreId: '001',
+            hits: '20',
+            page: i,
+            keyword: word
+        },//.data
+         
+        //  自分のコメント つうしんが成功した場合、取得データを表示していく処理。
+        // 1.ifで検索結果が1件以上ある場合は画像と作品名、著者名、出版社名を表示し、0件の場合は検索結果がないことを表示。
+        }).done(function(data) {//自分のコメント 任意のdataという引数にリクエストによって取得したデータを格納している
+       // この中にデータ取得後の動きを記述していきます。
+          // console.log(data);
+          if(data.Items.length > 0) {
+           $.each(data.Items, function(index, value) {
+                // console.log(value);
+                var title = value.Item.title;
+                //data配列のItems配列のItemオブジェクトのtitle keyにてtatleを取得。[index]はヒット数取得するため。
+                var author = value.Item.author;
+                var publisherName = value.Item.publisherName;
+                var largeImageUrl = value.Item.largeImageUrl;
+                
+          // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
+          // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
+                $(".lists").prepend(
+                "<li class='lists__item'>"+
+                "<div class='lists__item__inner'>"+
+                  "<a href='' class='lists__item__link' target='_blank'>"+
+                    "<img src='"+largeImageUrl+"' class='lists__item__img' alt=''>"+
+                    "<p class='lists__item__detail'>作品名："+title+"</p>"+
+                    "<p class='lists__item__detail'>作者　："+author+"</p>"+
+                    "<p class='lists__item__detail'>出版社："+publisherName+"</p>"+
+                  "</a>"+
+                "</div>"+
+                "</li>"
+            );//append
+          });//each
+        }else{
+          $(".lists").prepend("<div class=message>検索結果が見つかりませんでした。\n別のキーワードで検索して下さい。</div>");
+        }//doneの中のif
+      })//.fail(function(jqXHR, textStatus, errorThrown) {
+        // var regex = new RegExp(/^\w{1}$/);
+        // if (word == "") {
+        //   alert("検索ワードの指定がありません。");
+        // } else if (regex.test(word)) {
+        //   alert("検索ワードが適切ではありません。\n半角英数字1文字以外で検索してください。");
+        // } else {
+        //   alert("エラー");
+        // }
+      //});//fail
+      .fail(function(data) {
+            var error = data.responseJSON.error;
+            var description = data.responseJSON.error_description;
+            console.log(error);
+            console.log(description);
+            alert(error+"\n"+description);
+      });//fail
+     });//click
+   });//最初のfunction
     </script>
   </body>
 </html>
+
+<!--eachで回すからfor, ifいらん。eqで同じところ指定している。valueがさすもの。,で区切ると縦に並ぶ。+でつなぐと横に？  -->
+<!-- for(var i = 0; i < 21; i++) {
+  $.each(data.Items[i], function(index, value) {
+       var title = data.Items[i].Item.title; //data配列のItems配列のItemオブジェクトのtitle keyにてtatleを取得。[index]はヒット数取得するため。
+       var author = data.Items[i].Item.author;
+       var publisherName = data.Items[i].Item.publisherName;
+       var largeImageUrl = data.Items[i].Item.largeImageUrl;
+       $(".lists__item__img").attr("src", largeImageUrl);
+       $(".lists__item__detail").eq(0).append(title);
+       $(".lists__item__detail").eq(1).append(author);
+       $(".lists__item__detail").eq(2).append(publisherName);  
+       console.log(title);
+       console.log(author);
+       console.log(publisherName); 
+       console.log(largeImageUrl);
+       
+       $(".lists").append(
+       "<li class='lists__item'>",
+       "<div class='lists__item__inner'>",
+         "<a href='' class='lists__item__link' target='_blank'>",
+           "<img src='' class='lists__item__img' alt=''>",
+           "<p class='lists__item__detail'>作品名：</p>",
+           "<p class='lists__item__detail'>作者　：</p>",
+           "<p class='lists__item__detail'>出版社：</p>",
+         "</a>",
+       "</div>",
+       "</li>"
+   );
+ });//each
+}//for -->

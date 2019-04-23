@@ -100,14 +100,13 @@
       // 自分のコメント each(オブジェクトや配列,関数)
       // 自分のコメント selectタグによってselectボックスを生成。クリックすると子のoption要素が表示される。
       // 自分でコメント changeは指定要素がクリックされたり、イベント発火すると引数の関数が実行される。  
-      // 自分でコメント selectボックス内のli要素をクリック
+      // 自分でコメント クリックしたselectボックス内のli要素のvalueの値を取得して、それと同じ値を持つdata属性
+      // 自分でコメント allはeach不必要。eachを使うのはたぶんif文で複数のデータを処理できないから。一個ずつループさせないといけない。
       $(function() {
         $(".select").change(function()　{
           var opVal = $(this).val();
           if(opVal == "all"){
-            $(".list").children("li").each(function() {
-              $(this).show();
-            });
+            $(".list").children("li").show();
           }else{
             $(".list").children("li").each(function() {
               if($(this).data("category-type") == opVal){
