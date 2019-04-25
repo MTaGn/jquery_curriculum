@@ -82,6 +82,7 @@
         $('#q2').click(function() {
           $(this).css('background-color', 'cadetblue');
         });
+        
         // <div class="btn" id="q2">q2</div>をクリックした後に背景色が変わるはず。
         // .click();　clickメソッドは()の中に関数を書くと指定した要素をクリックした後にその関数を実行するという処理をやってくれる。関数とは何だという方はjavascript-lessonの前の項にもどりましょう。
         // $(this)　これは超簡単に書くと、この記述の前に指定されたDOMを指定する。この場合クリックした要素である$('#q2')のこと。
@@ -158,6 +159,15 @@
           var num = $(this).index();
           $('#q11').find('li').eq(num).addClass('large');
         });
+
+        var array = ["あ","い","う"];
+        console.log(array);
+        var arrayRev = array.reverse();
+        console.log(arrayRev);
+        $($.get().reverse()).each(arrayRev, function(index, value){
+          console.log(value);
+        });
+
         // .eq() DOM要素の引数の値に等しい番号のDOMを指定する。
         // $(this).index()で取得された値（何番目）をeq()の引数に入れることによって、#q10と対応した#q11のDOMを取得出来る。
         // ここまででjQueryでよく使う重要なメソッドはほぼほぼ抑えられたはずなのでこれ以降のカリキュラムに役立ててください。
